@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jx-payments-manning
+spec:
+  selector:
+    matchLabels:
+      app: jx-payments-manning
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: jx-payments-manning
+    spec:
+      containers:
+        - name: jx-payments-manning
+          image: localhost:32000/jx-payments-manning
+          env:
+            - name: MONEYFX_PG_HOST
+              value: mysql-db
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-db
+spec:
+  selector:
+    matchLabels:
+      app: mysql-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mysql-db
+    spec:
+      containers:
+        - name: mysql-db
+          image: mysql:5.7
+          env:
+            - name: MYSQL_DATABASE
+              value: moneyfx
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: mysql-root-password
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc

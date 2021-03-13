@@ -1,0 +1,25 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: mysql-db
+spec:
+  selector:
+    app: mysql-db
+  ports:
+    - name: port
+      port: 3306
+  type: ClusterIP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: jx-payments-manning
+spec:
+  selector:
+    app: jx-payments-manning
+  ports:
+    - name: http
+      port: 8080
+  externalIPs:
+    - 172.40.40.105
+  type: LoadBalancer
